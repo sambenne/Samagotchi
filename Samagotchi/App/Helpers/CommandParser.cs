@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Samagotchi.App.Helpers
 {
@@ -21,6 +22,10 @@ namespace Samagotchi.App.Helpers
             {
                 parts.Remove(action);
                 _command.Args = parts;
+            }
+            else
+            {
+                _command.Args = new List<string>();
             }
 
             if (_commands.Has(action))

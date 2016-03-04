@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Samagotchi.App.Commands;
 using Samagotchi.App.Helpers;
 using Samagotchi.App.Models;
+using Samagotchi.App.Pet;
 
 namespace Samagotchi.App.Actions
 {
@@ -18,10 +18,16 @@ namespace Samagotchi.App.Actions
 
         public void Do(IList<string> args)
         {
+            if (args.Count == 0)
+            {
+                ConsoleHelpers.ErrorMessage("You need to enter a name for your pet.");
+                return;
+            }
+
             var pet = new PetObject
             {
                 Name = FirstCharToUpper(args[0]),
-                Type = ConsoleHelpers.GetResponse("Select pet type (dog, cat, pig)")
+                Type = ConsoleHelpers.GetResponse($"Select pet type ({new PetTypes()})")
             };
 
             ConsoleHelpers.SuccessMessage("A pet was born");

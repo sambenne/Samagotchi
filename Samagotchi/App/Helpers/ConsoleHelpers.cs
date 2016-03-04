@@ -14,6 +14,14 @@ namespace Samagotchi.App.Helpers
             Console.ResetColor();
         }
 
+        public static void WarnMessage(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine();
+            Console.WriteLine(Arrow + message);
+            Console.ResetColor();
+        }
+
         public static void ErrorMessage(string message)
         {
             Console.ForegroundColor = ConsoleColor.Red;

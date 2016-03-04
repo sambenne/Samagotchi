@@ -1,16 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Newtonsoft.Json;
-using Samagotchi.App.Commands;
 
-namespace Samagotchi.App.Models
+namespace Samagotchi.App.Pet
 {
     public class PetManager
     {
         public const string Folder = "pets";
 
         private static PetManager _instance;
-        public static PetObject Pet = new PetObject();
+        public static IPet Pet;
         public static bool Loaded;
 
         private PetManager() { }
@@ -28,8 +28,7 @@ namespace Samagotchi.App.Models
                 var json = r.ReadToEnd();
                 try
                 {
-                    Pet = JsonConvert.DeserializeObject<PetObject>(json);
-                    Loaded = true;
+                    SetPet(JsonConvert.DeserializeObject<PetObject>(json));
                 }
                 catch (Exception)
                 {
@@ -38,16 +37,24 @@ namespace Samagotchi.App.Models
             }
         }
 
+        private static readonly object Locker = new object();
+
         public void Save()
         {
-            var fileLocation = $"{Folder}/{Pet.Name}.json";
-            var petJson = JsonConvert.SerializeObject(Pet);
-            File.WriteAllText(fileLocation, petJson);
+            lock (Locker)
+            {
+                var fileLocation = $"{Folder}/{Pet.Name.ToLower()}.json";
+                using (var file = new FileStream(fileLocation, FileMode.Append, FileAccess.Write, FileShare.Read))
+                using (var writer = new StreamWriter(file, Encoding.UTF8))
+                {
+                    writer.Write(JsonConvert.SerializeObject(Pet));
+                }
+            }
         }
 
         public void SetPet(PetObject pet)
         {
-            Pet = pet;
+            Pet = PetFactory.From(pet);
             Loaded = true;
         }
     }

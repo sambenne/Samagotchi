@@ -1,27 +1,26 @@
 ﻿using System;
-using System.Threading;
 using System.Timers;
 using Samagotchi.App.Actions;
 using Samagotchi.App.Helpers;
+using Samagotchi.App.Pet;
 
 namespace Samagotchi.App
 {
     public class Base
     {
-        private static Helpers.Commands _commands;
+        private static Commands _commands;
         private static EventManager _eventManager;
-        private static DateTime _startUp;
+        private static int _ticks;
 
         public static void Main(string[] args)
         {
-            _startUp = DateTime.Now;
             _eventManager = new EventManager();
-            _commands = new Helpers.Commands();
+            _commands = new Commands();
             RegisterCommands();
             RegisterEvents();
             StartUpMessage();
 
-            var timer = new System.Timers.Timer
+            var timer = new Timer
             {
                 Interval = 2000,
                 Enabled = true
@@ -31,18 +30,17 @@ namespace Samagotchi.App
             timer.Start();
 
             var commandParser = new CommandParser(_commands);
-            while (true)
+            string line;
+            while ((line = Console.ReadLine()) != "")
             {
                 try
                 {
-                    var command = commandParser.From(Console.ReadLine());
+                    var command = commandParser.From(line);
 
                     if(command.Action.CanRun())
                         command.Action.Do(command.Args);
                     else
                         ConsoleHelpers.ErrorMessage("Command invalid!");
-
-                    _eventManager.RunEvents();
                 }
                 catch (Exception exception)
                 {
@@ -59,18 +57,26 @@ namespace Samagotchi.App
 
         private static void RegisterCommands()
         {
-            _commands.Add("feed", new Feed());
-            _commands.Add("load", new Load());
-            _commands.Add("create", new Create());
+            _commands.Add(Feed.ActionName, new Feed());
+            _commands.Add(Load.ActionName, new Load());
+            _commands.Add(Create.ActionName, new Create());
+            _commands.Add(Exit.ActionName, new Exit());
+            _commands.Add(Stats.ActionName, new Stats());
         }
 
         private static void RegisterEvents()
         {
+            _eventManager.Add("hunger", ticks =>
+            {
+                if(ticks % 20 == 0 && PetManager.Loaded)
+                    PetManager.Pet.LowerHunger();
+            });
         }
 
-        private static void OnTimedEvent(object source, ElapsedEventArgs e)
+        private static void OnTimedEvent(object source, ElapsedEventArgs events)
         {
-            _eventManager.RunEvents();
+            _eventManager.RunEvents(_ticks);
+            _ticks++;
         }
     }
 }

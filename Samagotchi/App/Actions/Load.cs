@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Samagotchi.App.Helpers;
-using Samagotchi.App.Models;
+using Samagotchi.App.Pet;
 
 namespace Samagotchi.App.Actions
 {
