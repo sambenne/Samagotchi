@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Samagotchi.App.Commands;
+using Samagotchi.App.Actions;
 
 namespace Samagotchi.App.Helpers
 {
@@ -9,8 +9,7 @@ namespace Samagotchi.App.Helpers
         {
             Args = new List<string>();
         }
-        public string Action { get; set; }
-        public ICommand Commander { get; set; }
+        public IAction Action { get; set; }
         public List<string> Args { get; set; }
     }
 }

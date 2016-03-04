@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using Samagotchi.App.Commands;
 using Samagotchi.App.Helpers;
 using Samagotchi.App.Models;
 
-namespace Samagotchi.App.Commands
+namespace Samagotchi.App.Actions
 {
-    public class Create : ICommand
+    public class Create : IAction
     {
-        public const string Name = "Create";
+        public const string ActionName = "Create";
+
+        public bool CanRun()
+        {
+            return !PetManager.Loaded;
+        }
 
         public void Do(IList<string> args)
         {
@@ -20,9 +25,13 @@ namespace Samagotchi.App.Commands
             };
 
             ConsoleHelpers.SuccessMessage("A pet was born");
-            PetLoader.Instance.SetPet(pet);
-            var storage = JsonConvert.SerializeObject(pet);
-            System.IO.File.WriteAllText("pets/" + pet.Name.ToLower() + ".json", storage);
+            PetManager.Instance.SetPet(pet);
+            PetManager.Instance.Save();
+        }
+
+        public string Name()
+        {
+            return ActionName;
         }
 
         private static string FirstCharToUpper(string input)

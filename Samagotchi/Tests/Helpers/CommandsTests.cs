@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
-using Samagotchi.App.Commands;
+using Samagotchi.App.Actions;
 using Samagotchi.App.Helpers;
 
 namespace Samagotchi.Tests.Helpers
 {
     [TestFixture]
-    public class WhenACommandIsEntered : ICommand
+    public class WhenAActionIsEntered : IAction
     {
         private Commands _commands;
 
@@ -36,14 +36,24 @@ namespace Samagotchi.Tests.Helpers
             Assert.That(_commands.IsValid(command), Is.False);
         }
 
+        public bool CanRun()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void Do(IList<string> args)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public string Name()
         {
             throw new System.NotImplementedException();
         }
     }
 
     [TestFixture]
-    public class WhenACommandIdParsed : ICommand
+    public class WhenAActionIdParsed : IAction
     {
         private CommandParser _commandParser;
         private Commands _commands;
@@ -71,7 +81,7 @@ namespace Samagotchi.Tests.Helpers
         public void ThenItChecksThatItIsValid(string input)
         {
             var command = _commandParser.From(input);
-            Assert.That(_commands.IsValid(command.Action), Is.True);
+            Assert.That(_commands.IsValid(command.Action.Name()), Is.True);
         }
 
         [TestCase("something random")]
@@ -79,7 +89,7 @@ namespace Samagotchi.Tests.Helpers
         public void ThenItChecksThatItIsNotValid(string input)
         {
             var command = _commandParser.From(input);
-            Assert.That(_commands.IsValid(command.Action), Is.False);
+            Assert.That(_commands.IsValid(command.Action.Name()), Is.False);
         }
 
         [TestCase("", false)]
@@ -101,7 +111,17 @@ namespace Samagotchi.Tests.Helpers
             Assert.That(command.Args.Count, Is.EqualTo(argsCount));
         }
 
+        public bool CanRun()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void Do(IList<string> args)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public string Name()
         {
             throw new System.NotImplementedException();
         }

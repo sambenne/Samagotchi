@@ -1,19 +1,34 @@
 ﻿using System;
-using Samagotchi.App.Commands;
+using System.Threading;
+using System.Timers;
+using Samagotchi.App.Actions;
 using Samagotchi.App.Helpers;
-using Samagotchi.App.Models;
 
 namespace Samagotchi.App
 {
     public class Base
     {
         private static Helpers.Commands _commands;
+        private static EventManager _eventManager;
+        private static DateTime _startUp;
 
         public static void Main(string[] args)
         {
+            _startUp = DateTime.Now;
+            _eventManager = new EventManager();
             _commands = new Helpers.Commands();
             RegisterCommands();
+            RegisterEvents();
             StartUpMessage();
+
+            var timer = new System.Timers.Timer
+            {
+                Interval = 2000,
+                Enabled = true
+            };
+
+            timer.Elapsed += OnTimedEvent;
+            timer.Start();
 
             var commandParser = new CommandParser(_commands);
             while (true)
@@ -22,17 +37,12 @@ namespace Samagotchi.App
                 {
                     var command = commandParser.From(Console.ReadLine());
 
-                    if (command.Action == "exit")
-                        Environment.Exit(0);
-
-                    if(_commands.IsValid(command.Action) && command.Action == "load")
-                        command.Commander.Do(command.Args);
-                    else if (_commands.IsValid(command.Action) && command.Action == "create")
-                        command.Commander.Do(command.Args);
-                    else if (PetLoader.Loaded && _commands.IsValid(command.Action))
-                        command.Commander.Do(command.Args);
+                    if(command.Action.CanRun())
+                        command.Action.Do(command.Args);
                     else
                         ConsoleHelpers.ErrorMessage("Command invalid!");
+
+                    _eventManager.RunEvents();
                 }
                 catch (Exception exception)
                 {
@@ -52,6 +62,15 @@ namespace Samagotchi.App
             _commands.Add("feed", new Feed());
             _commands.Add("load", new Load());
             _commands.Add("create", new Create());
+        }
+
+        private static void RegisterEvents()
+        {
+        }
+
+        private static void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            _eventManager.RunEvents();
         }
     }
 }

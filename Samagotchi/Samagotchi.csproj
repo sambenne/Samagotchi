@@ -66,17 +66,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App\Commands\Create.cs" />
-    <Compile Include="App\Commands\Load.cs" />
-    <Compile Include="App\Commands\Feed.cs" />
-    <Compile Include="App\Commands\ICommand.cs" />
+    <Compile Include="App\Actions\Create.cs" />
+    <Compile Include="App\Actions\Exit.cs" />
+    <Compile Include="App\Actions\Load.cs" />
+    <Compile Include="App\Actions\Feed.cs" />
+    <Compile Include="App\Actions\IAction.cs" />
+    <Compile Include="App\EventManager.cs" />
     <Compile Include="App\Models\PetObject.cs" />
     <Compile Include="App\Helpers\Command.cs" />
     <Compile Include="App\Helpers\CommandParser.cs" />
     <Compile Include="App\Helpers\Commands.cs" />
     <Compile Include="App\Helpers\ConsoleHelpers.cs" />
     <Compile Include="App\Models\IPet.cs" />
-    <Compile Include="App\Models\PetLoader.cs" />
+    <Compile Include="App\Models\PetManager.cs" />
     <Compile Include="App\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\Helpers\CommandsTests.cs" />

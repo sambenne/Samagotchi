@@ -5,19 +5,25 @@ using Samagotchi.App.Commands;
 
 namespace Samagotchi.App.Models
 {
-    public class PetLoader
+    public class PetManager
     {
-        private static PetLoader _instance;
+        public const string Folder = "pets";
+
+        private static PetManager _instance;
         public static PetObject Pet = new PetObject();
         public static bool Loaded;
 
-        private PetLoader() { }
+        private PetManager() { }
 
-        public static PetLoader Instance => _instance ?? (_instance = new PetLoader());
+        public static PetManager Instance => _instance ?? (_instance = new PetManager());
 
         public void Load(string name)
         {
-            using (var r = new StreamReader(name + ".json"))
+            var fileLocation = $"{Folder}/{name}.json";
+            Loaded = false;
+            if (!File.Exists(fileLocation)) return;
+
+            using (var r = new StreamReader(fileLocation))
             {
                 var json = r.ReadToEnd();
                 try
@@ -30,6 +36,13 @@ namespace Samagotchi.App.Models
                     Loaded = false;
                 }
             }
+        }
+
+        public void Save()
+        {
+            var fileLocation = $"{Folder}/{Pet.Name}.json";
+            var petJson = JsonConvert.SerializeObject(Pet);
+            File.WriteAllText(fileLocation, petJson);
         }
 
         public void SetPet(PetObject pet)
