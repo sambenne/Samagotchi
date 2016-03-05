@@ -1,5 +1,4 @@
-﻿using System.Data;
-using Samagotchi.App.Model;
+﻿using Samagotchi.App.Model;
 using Samagotchi.App.Models;
 
 namespace Samagotchi.App.Pet.Pets
@@ -29,13 +28,20 @@ namespace Samagotchi.App.Pet.Pets
             return true;
         }
 
-        public override bool Water(string item)
+        public override bool Drink(string item)
         {
+            if (Thirst >= 10) return false;
+            Thirst += (Thirst > 10 ? 0 : 2);
+
             return true;
         }
 
         public override bool Play(string game)
         {
+            if (Boredom <= 0) return false;
+            Boredom -= (Boredom < 0 ? 0 : 4);
+            Boredom = (Boredom < 0 ? 0 : Boredom);
+
             return true;
         }
 

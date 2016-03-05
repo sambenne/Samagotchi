@@ -14,6 +14,7 @@ namespace Samagotchi.App
 
         public static void Main(string[] args)
         {
+            Console.Title = "Samagotchi";
             _eventManager = new EventManager();
             _commands = new Commands();
             RegisterCommands();
@@ -35,6 +36,8 @@ namespace Samagotchi.App
             {
                 try
                 {
+                    Console.Clear();
+
                     var command = commandParser.From(line);
 
                     if(command.Action.CanRun())
@@ -62,6 +65,7 @@ namespace Samagotchi.App
             _commands.Add(Create.ActionName, new Create());
             _commands.Add(Exit.ActionName, new Exit());
             _commands.Add(Stats.ActionName, new Stats());
+            _commands.Add(Play.ActionName, new Play());
         }
 
         private static void RegisterEvents()
@@ -70,6 +74,18 @@ namespace Samagotchi.App
             {
                 if(ticks % 20 == 0 && PetManager.Loaded)
                     PetManager.Pet.LowerHunger();
+            });
+
+            _eventManager.Add("thirst", ticks =>
+            {
+                if (ticks % 30 == 0 && PetManager.Loaded)
+                    PetManager.Pet.LowerThirst();
+            });
+
+            _eventManager.Add("boredom", ticks =>
+            {
+                if (ticks % 20 == 0 && PetManager.Loaded)
+                    PetManager.Pet.IncreaseBoredom();
             });
         }
 

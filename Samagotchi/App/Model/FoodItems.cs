@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Samagotchi.App.Model
 {
-    public class FoodItems
+    public class FoodItems : IItems
     {
         public static IList<FoodItem> Items;
 

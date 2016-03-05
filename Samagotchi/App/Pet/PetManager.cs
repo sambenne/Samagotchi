@@ -41,14 +41,25 @@ namespace Samagotchi.App.Pet
 
         public void Save()
         {
-            lock (Locker)
+            FileStream file = null;
+            StreamWriter writer = null;
+            try
             {
-                var fileLocation = $"{Folder}/{Pet.Name.ToLower()}.json";
-                using (var file = new FileStream(fileLocation, FileMode.Append, FileAccess.Write, FileShare.Read))
-                using (var writer = new StreamWriter(file, Encoding.UTF8))
+                lock (Locker)
                 {
-                    writer.Write(JsonConvert.SerializeObject(Pet));
+                    var fileLocation = $"{Folder}/{Pet.Name.ToLower()}.json";
+                    using (file = new FileStream(fileLocation, FileMode.Truncate, FileAccess.Write, FileShare.Read))
+                    using (writer = new StreamWriter(file, Encoding.UTF8))
+                    {
+                        writer.Write(JsonConvert.SerializeObject(Pet));
+                        writer.Close();
+                    }
                 }
+            }
+            finally
+            {
+                file?.Dispose();
+                writer?.Dispose();
             }
         }
 

@@ -1,21 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 
 namespace Samagotchi.App.Helpers
 {
     public class CommandParser
     {
-        private readonly Command _command;
+        private Command _command;
         private readonly Commands _commands;
 
         public CommandParser(Commands commands)
         {
-            _command = new Command();
             _commands = commands;
         }
 
         public Command From(string input)
         {
+            _command = new Command();
+
             var parts = input.Split(' ').ToList();
             var action = parts[0].ToLower();
             if (parts.Count > 1)
@@ -23,15 +24,10 @@ namespace Samagotchi.App.Helpers
                 parts.Remove(action);
                 _command.Args = parts;
             }
-            else
-            {
-                _command.Args = new List<string>();
-            }
 
-            if (_commands.Has(action))
-            {
-                _command.Action = _commands.From(action);
-            }
+            if (!_commands.Has(action))
+                throw new Exception("Command does not exist.");
+            _command.Action = _commands.From(action);
 
             return _command;
         }

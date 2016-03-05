@@ -16,7 +16,7 @@ namespace Samagotchi.App.Pet.Pets
             return true;
         }
 
-        public override bool Water(string item)
+        public override bool Drink(string item)
         {
             return true;
         }

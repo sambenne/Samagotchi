@@ -7,7 +7,7 @@
             Health = 10;
             Hunger = 10;
             Thirst = 10;
-            Boredom = 10;
+            Boredom = 0;
         }
         public string Name { get; set; }
         public string Type { get; set; }

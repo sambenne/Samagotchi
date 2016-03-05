@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Samagotchi.App.Helpers;
 using Samagotchi.App.Pet;
 
@@ -19,8 +20,8 @@ namespace Samagotchi.App.Actions
             PetName = args[0];
             var petLoader = PetManager.Instance;
             petLoader.Load(PetName);
-            ConsoleHelpers.SuccessMessage("Pet Name: " + PetManager.Pet.Name);  
-            ConsoleHelpers.SuccessMessage("Pet Type: " + PetManager.Pet.Type);  
+            ConsoleHelpers.SuccessMessage("Pet Name: " + PetManager.Pet.Name);
+            Console.Title = $"Samagotchi - {PetManager.Pet.Name}";
         }
 
         public string Name()
