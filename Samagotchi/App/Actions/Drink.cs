@@ -4,18 +4,17 @@ using Samagotchi.App.Pet;
 
 namespace Samagotchi.App.Actions
 {
-    public class Play : IAction
+    public class Drink : IAction
     {
-        public const string ActionName = "Play";
+        public const string ActionName = "Drink";
 
         public void Register(Commands commands, EventManager events)
         {
             commands.Add(ActionName, this);
-
-            events.Add("boredom", ticks =>
+            events.Add("thirst", ticks =>
             {
-                if (ticks % 20 == 0 && PetManager.Loaded)
-                    PetManager.Pet.IncreaseBoredom();
+                if (ticks % 30 == 0 && PetManager.Loaded)
+                    PetManager.Pet.LowerThirst();
             });
         }
 
@@ -26,8 +25,11 @@ namespace Samagotchi.App.Actions
 
         public void Do(IList<string> args)
         {
-            var pet = PetManager.Pet;
-            pet.Play("");
+            if(PetManager.Pet.Drink(""))
+                ConsoleHelpers.SuccessMessage(PetManager.Pet.Name + " drank.");
+            else
+                ConsoleHelpers.ErrorMessage(PetManager.Pet.Name + " didn't drink.");
+
             PetManager.Instance.Save();
         }
 

@@ -36,5 +36,10 @@ namespace Samagotchi.App.Helpers
         {
             return !string.IsNullOrEmpty(_command.Action.Name());
         }
+
+        public void Dispose()
+        {
+            _command = null;
+        }
     }
 }

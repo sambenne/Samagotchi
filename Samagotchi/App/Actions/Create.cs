@@ -11,6 +11,11 @@ namespace Samagotchi.App.Actions
     {
         public const string ActionName = "Create";
 
+        public void Register(Commands commands, EventManager events)
+        {
+            commands.Add(ActionName, this);
+        }
+
         public bool CanRun()
         {
             return !PetManager.Loaded;

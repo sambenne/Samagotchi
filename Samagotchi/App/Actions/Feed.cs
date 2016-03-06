@@ -7,7 +7,18 @@ namespace Samagotchi.App.Actions
     public class Feed : IAction
     {
         public const string ActionName = "Feed";
-        public Dictionary<string, FoodItem> FoodItems; 
+        public Dictionary<string, FoodItem> FoodItems;
+
+        public void Register(Commands commands, EventManager events)
+        {
+            commands.Add(ActionName, this);
+
+            events.Add("hunger", ticks =>
+            {
+                if (ticks % 20 == 0 && PetManager.Loaded)
+                    PetManager.Pet.LowerHunger();
+            });
+        }
 
         public bool CanRun()
         {

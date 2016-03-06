@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Timers;
 
 namespace Samagotchi.App
 {
     public class EventManager
     {
+        private static int _ticks;
         public Dictionary<string, Action<int>> Events;
 
         public EventManager()
@@ -23,6 +25,24 @@ namespace Samagotchi.App
             {
                 eventFunc.Value.Invoke(ticks);
             }
+        }
+
+        public void StartTimer()
+        {
+            var timer = new Timer
+            {
+                Interval = 2000,
+                Enabled = true
+            };
+
+            timer.Elapsed += OnTimedEvent;
+            timer.Start();
+        }
+
+        private void OnTimedEvent(object source, ElapsedEventArgs events)
+        {
+            RunEvents(_ticks);
+            _ticks++;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Samagotchi.App.Helpers;
 
 namespace Samagotchi.App.Actions
 {
@@ -7,6 +8,11 @@ namespace Samagotchi.App.Actions
     {
         public const string ActionName = "Exit";
         public string PetName;
+
+        public void Register(Commands commands, EventManager events)
+        {
+            commands.Add(ActionName, this);
+        }
 
         public bool CanRun()
         {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
+using Samagotchi.App;
 using Samagotchi.App.Actions;
 using Samagotchi.App.Helpers;
 
@@ -34,6 +35,11 @@ namespace Samagotchi.Tests.Helpers
         public void ThenItChecksThatItIsNotValid(string command)
         {
             Assert.That(_commands.IsValid(command), Is.False);
+        }
+
+        public void Register(Commands commands, EventManager events)
+        {
+            throw new System.NotImplementedException();
         }
 
         public bool CanRun()
@@ -109,6 +115,11 @@ namespace Samagotchi.Tests.Helpers
         {
             var command = _commandParser.From(input);
             Assert.That(command.Args.Count, Is.EqualTo(argsCount));
+        }
+
+        public void Register(Commands commands, EventManager events)
+        {
+            throw new System.NotImplementedException();
         }
 
         public bool CanRun()

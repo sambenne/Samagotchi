@@ -10,6 +10,11 @@ namespace Samagotchi.App.Actions
         public const string ActionName = "Load";
         public string PetName;
 
+        public void Register(Commands commands, EventManager events)
+        {
+            commands.Add(ActionName, this);
+        }
+
         public bool CanRun()
         {
             return true;

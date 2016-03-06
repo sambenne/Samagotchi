@@ -66,6 +66,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App\Actions\Help.cs" />
+    <Compile Include="App\Actions\Drink.cs" />
     <Compile Include="App\Actions\Play.cs" />
     <Compile Include="App\Actions\Stats.cs" />
     <Compile Include="App\Actions\Create.cs" />

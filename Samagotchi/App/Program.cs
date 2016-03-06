@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Timers;
-using Samagotchi.App.Actions;
 using Samagotchi.App.Helpers;
-using Samagotchi.App.Pet;
 
 namespace Samagotchi.App
 {
@@ -10,89 +7,83 @@ namespace Samagotchi.App
     {
         private static Commands _commands;
         private static EventManager _eventManager;
-        private static int _ticks;
+        private static bool _quit;
 
         public static void Main(string[] args)
         {
             Console.Title = "Samagotchi";
+
             _eventManager = new EventManager();
             _commands = new Commands();
-            RegisterCommands();
-            RegisterEvents();
+            _commands.RegisterCommands(_eventManager);
+            _eventManager.StartTimer();
             StartUpMessage();
 
-            var timer = new Timer
-            {
-                Interval = 2000,
-                Enabled = true
-            };
+            Console.CancelKeyPress += Console_CancelKeyPress;
+            MainLoop();
+        }
 
-            timer.Elapsed += OnTimedEvent;
-            timer.Start();
+        private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs eventArgs)
+        {
+            Console.WriteLine("{0} hit, quitting...", eventArgs.SpecialKey);
+            _quit = true;
+            eventArgs.Cancel = true;
+        }
 
-            var commandParser = new CommandParser(_commands);
+        private static void MainLoop()
+        {
             string line;
-            while ((line = Console.ReadLine()) != "")
+            var commandParser = new CommandParser(_commands);
+
+            while (!string.IsNullOrEmpty(line = Console.ReadLine()) && !_quit)
             {
-                try
-                {
-                    Console.Clear();
+                commandParser.Dispose();
+                if (_quit) continue;
 
-                    var command = commandParser.From(line);
+                HandleInput(commandParser, line);
+            }
+        }
 
-                    if(command.Action.CanRun())
-                        command.Action.Do(command.Args);
-                    else
-                        ConsoleHelpers.ErrorMessage("Command invalid!");
-                }
-                catch (Exception exception)
-                {
-                    ConsoleHelpers.ErrorMessage(exception.Message);
-                }
+        private static void HandleInput(CommandParser commandParser, string line)
+        {
+            try
+            {
+                var command = commandParser.From(line);
+
+                if (command.Action.CanRun())
+                    command.Action.Do(command.Args);
+                else
+                    ConsoleHelpers.ErrorMessage("Command invalid!");
+            }
+            catch (Exception exception)
+            {
+                ConsoleHelpers.ErrorMessage(exception.Message);
             }
         }
 
         private static void StartUpMessage()
         {
-            Console.WriteLine("Welcome to Samagotchi!");
-            Console.WriteLine("Load pet or create a new one (load Barry or create Terry)");
-        }
-
-        private static void RegisterCommands()
-        {
-            _commands.Add(Feed.ActionName, new Feed());
-            _commands.Add(Load.ActionName, new Load());
-            _commands.Add(Create.ActionName, new Create());
-            _commands.Add(Exit.ActionName, new Exit());
-            _commands.Add(Stats.ActionName, new Stats());
-            _commands.Add(Play.ActionName, new Play());
-        }
-
-        private static void RegisterEvents()
-        {
-            _eventManager.Add("hunger", ticks =>
+            string[] lines =
             {
-                if(ticks % 20 == 0 && PetManager.Loaded)
-                    PetManager.Pet.LowerHunger();
-            });
-
-            _eventManager.Add("thirst", ticks =>
+                @"   _____ ___    __  ______   __________  ______________  ______",
+                @"  / ___//   |  /  |/  /   | / ____/ __ \/_  __/ ____/ / / /  _/",
+                @"  \__ \/ /| | / /|_/ / /| |/ / __/ / / / / / / /   / /_/ // /  ",
+                @" ___/ / ___ |/ /  / / ___ / /_/ / /_/ / / / / /___/ __  // /   ",
+                @"/____/_/  |_/_/  /_/_/  |_\____/\____/ /_/  \____/_/ /_/___/   ",
+                @"                                                               ",
+                @"                           (c).-.(c)                           ",
+                @"                            / ._. \                            ",
+                @"                          __\( Y )/__                          ",
+                @"                         (_.-/'-'\-._)                         ",
+                @"                            ||   ||                            ",
+                @"                          _.' `-' '._                          ",
+                @"                         (.-./`-`\.-.)                         ",
+                @"                          `-'     `-'                          "
+            };
+            foreach (var line in lines)
             {
-                if (ticks % 30 == 0 && PetManager.Loaded)
-                    PetManager.Pet.LowerThirst();
-            });
-
-            _eventManager.Add("boredom", ticks =>
-            {
-                if (ticks % 20 == 0 && PetManager.Loaded)
-                    PetManager.Pet.IncreaseBoredom();
-            });
-        }
-
-        private static void OnTimedEvent(object source, ElapsedEventArgs events)
-        {
-            _eventManager.RunEvents(_ticks);
-            _ticks++;
+                Console.WriteLine(line);
+            }
         }
     }
 }
