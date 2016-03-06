@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Samagotchi.App.Helpers;
-using Samagotchi.App.Models;
 using Samagotchi.App.Pet;
 
 namespace Samagotchi.App.Actions
@@ -23,19 +22,16 @@ namespace Samagotchi.App.Actions
 
         public void Do(IList<string> args)
         {
-            if (args.Count == 0)
-            {
-                ConsoleHelpers.ErrorMessage("You need to enter a name for your pet.");
-                return;
-            }
+            var pet = new PetObject();
 
-            var pet = new PetObject
-            {
-                Name = FirstCharToUpper(args[0]),
-                Type = ConsoleHelpers.GetResponse($"Select pet type ({new PetTypes()})")
-            };
+            var typeResponse = ConsoleHelpers.GetResponse($"Select pet type ({new PetTypes()})");
+            pet.Type = PetTypes.From(typeResponse);
+            var genderResponse = ConsoleHelpers.GetResponse("Is your pet a Boy or Girl?");
+            pet.Gender = GenderTypes.From(genderResponse);
 
-            ConsoleHelpers.SuccessMessage("A pet was born");
+            pet.Name = FirstCharToUpper(ConsoleHelpers.GetResponse("What do you want to call your pet?"));
+
+            ConsoleHelpers.SuccessMessage($"{pet.Name} was born");
             PetManager.Instance.SetPet(pet);
             PetManager.Instance.Save();
         }

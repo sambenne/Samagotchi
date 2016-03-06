@@ -1,6 +1,4 @@
-﻿using Samagotchi.App.Models;
-
-namespace Samagotchi.App.Pet.Pets
+﻿namespace Samagotchi.App.Pet.Pets
 {
     public class Pig : Pet
     {

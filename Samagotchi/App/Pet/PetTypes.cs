@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Samagotchi.App.Models
+namespace Samagotchi.App.Pet
 {
     public class PetTypes
     {
@@ -26,6 +26,19 @@ namespace Samagotchi.App.Models
         {
             var fieldInfos = typeof(PetTypes).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).ToList();
             return fieldInfos.Select(fieldInfo => fieldInfo.Name).ToList();
-        } 
+        }
+
+        public static string From(string typeResponse)
+        {
+            switch (typeResponse.ToLower())
+            {
+                case "dog":
+                    return Dog;
+                case "cat":
+                    return Cat;
+                default:
+                    return Pig;
+            }
+        }
     }
 }

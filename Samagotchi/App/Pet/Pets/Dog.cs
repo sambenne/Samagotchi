@@ -1,5 +1,4 @@
 ﻿using Samagotchi.App.Model;
-using Samagotchi.App.Models;
 
 namespace Samagotchi.App.Pet.Pets
 {

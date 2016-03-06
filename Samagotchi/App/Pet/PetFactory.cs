@@ -1,5 +1,4 @@
 ﻿using System;
-using Samagotchi.App.Models;
 using Samagotchi.App.Pet.Pets;
 
 namespace Samagotchi.App.Pet

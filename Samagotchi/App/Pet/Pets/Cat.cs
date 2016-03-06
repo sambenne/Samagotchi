@@ -1,13 +1,11 @@
-﻿using Samagotchi.App.Models;
-
-namespace Samagotchi.App.Pet.Pets
+﻿namespace Samagotchi.App.Pet.Pets
 {
     public class Cat : Pet
     {
         public Cat(PetObject petObject)
         {
             Type = PetTypes.Cat;
-            Age = petObject.Age;
+            MaxHunger = 10;
             Map(petObject);
         }
 

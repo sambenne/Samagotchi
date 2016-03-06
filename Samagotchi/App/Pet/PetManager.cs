@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -41,25 +43,25 @@ namespace Samagotchi.App.Pet
 
         public void Save()
         {
+            var fileLocation = $"{Folder}/{Pet.Name.ToLower()}.json";
+            if (File.Exists(fileLocation))
+                File.Delete(fileLocation);
+
             FileStream file = null;
-            StreamWriter writer = null;
             try
             {
                 lock (Locker)
                 {
-                    var fileLocation = $"{Folder}/{Pet.Name.ToLower()}.json";
-                    using (file = new FileStream(fileLocation, FileMode.Truncate, FileAccess.Write, FileShare.Read))
-                    using (writer = new StreamWriter(file, Encoding.UTF8))
+                    using (file = File.Create(fileLocation, 1024))
                     {
-                        writer.Write(JsonConvert.SerializeObject(Pet));
-                        writer.Close();
+                        var info = new UTF8Encoding(true).GetBytes(JsonConvert.SerializeObject(Pet));
+                        file.Write(info, 0, info.Length);
                     }
                 }
             }
             finally
             {
                 file?.Dispose();
-                writer?.Dispose();
             }
         }
 
@@ -67,6 +69,21 @@ namespace Samagotchi.App.Pet
         {
             Pet = PetFactory.From(pet);
             Loaded = true;
+        }
+
+        public static IList<string> DiscoverPets()
+        {
+            var files = Directory.GetFiles(Folder, "*.json");
+            var petNames = files.ToList();
+
+
+            return petNames.Select(ExtractNameFromPath).ToList();
+        }
+
+        private static string ExtractNameFromPath(string path)
+        {
+            path = path.Replace($"{Folder}\\", "").Replace(".json", "");
+            return char.ToUpper(path[0]) + path.Substring(1);
         }
     }
 }
