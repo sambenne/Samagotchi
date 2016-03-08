@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 using Samagotchi.App.Helpers;
 
 namespace Samagotchi.App
@@ -7,11 +9,14 @@ namespace Samagotchi.App
     {
         private static Commands _commands;
         private static EventManager _eventManager;
+        private static ServerManager _serverManager;
         private static bool _quit;
 
         public static void Main(string[] args)
         {
             Console.Title = "Samagotchi";
+
+            ConnectToServer();
 
             _eventManager = new EventManager();
             _commands = new Commands();
@@ -28,6 +33,7 @@ namespace Samagotchi.App
             Console.WriteLine("{0} hit, quitting...", eventArgs.SpecialKey);
             _quit = true;
             eventArgs.Cancel = true;
+            _serverManager.Close();
         }
 
         private static void MainLoop()
@@ -49,6 +55,7 @@ namespace Samagotchi.App
             try
             {
                 var command = commandParser.From(line);
+                _serverManager.SendMessage($"Command: {line}");
 
                 if (command.Action.CanRun())
                     command.Action.Do(command.Args);
@@ -83,6 +90,24 @@ namespace Samagotchi.App
             foreach (var line in lines)
             {
                 Console.WriteLine(line);
+            }
+        }
+
+        private static void ConnectToServer()
+        {
+            try
+            {
+                _serverManager = new ServerManager("127.0.0.1", 13000);
+                _serverManager.Connect();
+                _serverManager.SendMessage("Hello Server");
+            }
+            catch (ArgumentNullException e)
+            {
+                Console.WriteLine("ArgumentNullException: {0}", e);
+            }
+            catch (SocketException)
+            {
+                ConsoleHelpers.ErrorMessage("No server to connect to.\n");
             }
         }
     }
