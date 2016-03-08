@@ -46,29 +46,50 @@ namespace Samagotchi.App
         {
             while (true)
             {
-                if (_client.Client.Poll(0, SelectMode.SelectRead))
+                if (!IsConnected())
                 {
-                    var buff = new byte[1];
-                    if (_client.Client.Receive(buff, SocketFlags.Peek) == 0)
-                    {
-                        Console.WriteLine("Close Connection");
-                        _client.Close();
+                    Console.WriteLine("Close Connection");
+                    _client.Close();
 
-                        try
-                        {
-                            Console.WriteLine("Reconnecting...");
-                            _client = new TcpClient(AddressFamily.InterNetwork);
-                            await _client.ConnectAsync(IPAddress.Parse(_serverAddress), Convert.ToInt16(_port));
-                            await Task.Delay(TimeSpan.FromSeconds(5));
-                        }
-                        catch (SocketException e)
-                        {
-                            Console.WriteLine(e);
-                        }
+                    try
+                    {
+                        Console.WriteLine("Reconnecting...");
+                        _client = new TcpClient(AddressFamily.InterNetwork);
+                        await _client.ConnectAsync(IPAddress.Parse(_serverAddress), Convert.ToInt16(_port));
+                        await Task.Delay(TimeSpan.FromSeconds(5));
+                    }
+                    catch (SocketException e)
+                    {
+                        Console.WriteLine(e);
                     }
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(10));
+            }
+        }
+
+        private bool IsConnected()
+        {
+            try
+            {
+                var socket = _client.Client;
+                if (!socket.Connected) return false;
+
+                if (!socket.Poll(0, SelectMode.SelectWrite) || socket.Poll(0, SelectMode.SelectError)) return false;
+
+                var buffer = new byte[1];
+                return socket.Receive(buffer, SocketFlags.Peek) != 0;
+
+                //https://msdn.microsoft.com/en-us/library/system.net.sockets.socket.poll.aspx
+                //This method cannot detect certain kinds of connection problems, such as a broken network cable, or that the remote host was shut down ungracefully. You must attempt to send or receive data to detect these kinds of errors.
+            }
+            catch (SocketException)
+            {
+                return false;
+            }
+            catch (ObjectDisposedException)
+            {
+                return false;
             }
         }
     }
