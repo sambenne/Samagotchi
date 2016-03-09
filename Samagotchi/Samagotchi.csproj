@@ -75,6 +75,7 @@
     <Compile Include="App\Actions\Load.cs" />
     <Compile Include="App\Actions\Feed.cs" />
     <Compile Include="App\Actions\IAction.cs" />
+    <Compile Include="App\CommandArgParser.cs" />
     <Compile Include="App\EventManager.cs" />
     <Compile Include="App\Model\FoodItems.cs" />
     <Compile Include="App\Model\IItems.cs" />

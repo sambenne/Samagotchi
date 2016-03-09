@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 using Samagotchi.App.Helpers;
 
 namespace Samagotchi.App
@@ -14,6 +13,7 @@ namespace Samagotchi.App
 
         public static void Main(string[] args)
         {
+            CommandArgParser.From(args);
             Console.Title = "Samagotchi";
 
             ConnectToServer();
@@ -55,7 +55,7 @@ namespace Samagotchi.App
             try
             {
                 var command = commandParser.From(line);
-                _serverManager.SendMessage($"Command: {line}");
+                _serverManager.SendMessage($"{line}");
 
                 if (command.Action.CanRun())
                     command.Action.Do(command.Args);
@@ -97,9 +97,14 @@ namespace Samagotchi.App
         {
             try
             {
-                _serverManager = new ServerManager("127.0.0.1", 13000);
+                var port = CommandArgParser.Value("port") != null ? int.Parse(CommandArgParser.Value("port")) : 13000;
+                var serverAddress = CommandArgParser.Value("ip") ?? "127.0.0.1";
+                _serverManager = new ServerManager(serverAddress, port);
                 _serverManager.Connect();
-                _serverManager.SendMessage("Hello Server");
+            }
+            catch (NotConnectedException)
+            {
+                ConsoleHelpers.ErrorMessage("Not connected to the server.\n");
             }
             catch (ArgumentNullException e)
             {

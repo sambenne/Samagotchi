@@ -2,8 +2,8 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
+using Samagotchi.App.Helpers;
 
 namespace Samagotchi.App
 {
@@ -12,27 +12,28 @@ namespace Samagotchi.App
         private TcpClient _client;
         private readonly string _serverAddress;
         private readonly int _port;
+        private readonly Guid _id;
 
         public ServerManager(string serverAddress, int port)
         {
             _serverAddress = serverAddress;
             _port = port;
+            _id = Guid.NewGuid();
         }
 
         public void Connect()
         {
             _client = new TcpClient(_serverAddress, _port);
-            if (_client.Connected)
-            {
-                Task.Run(Reconnect);
-            }
+            SendMessage("Connect");
+
+            Task.Run(Reconnect);
         }
 
         public void SendMessage(string message)
         {
             var stream = _client.GetStream();
             var writer = new StreamWriter(stream);
-            writer.WriteLine(message);
+            writer.WriteLine($"{_id}|{message}");
             writer.Flush();
         }
 
@@ -91,6 +92,21 @@ namespace Samagotchi.App
             {
                 return false;
             }
+        }
+    }
+
+    public class NotConnectedException : Exception
+    {
+        public NotConnectedException()
+        {
+        }
+
+        public NotConnectedException(string message) : base(message)
+        {
+        }
+
+        public NotConnectedException(string message, Exception inner) : base(message, inner)
+        {
         }
     }
 }
